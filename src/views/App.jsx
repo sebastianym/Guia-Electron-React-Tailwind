@@ -1,9 +1,9 @@
-import React from 'react'
+import React from "react";
+import Login from "./login.jsx";
+import PurchasePage from "./purchase.jsx";
 
 const App = () => {
-  return (
-    <div className='font-bold text-5xl'>Hola Mundo xD</div>
-  )
-}
+  return <PurchasePage/>;
+};
 
 export default App;
