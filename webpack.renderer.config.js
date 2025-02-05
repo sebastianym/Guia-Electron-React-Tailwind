@@ -20,9 +20,10 @@ rules.push({
 });
 
 module.exports = {
-  // Put your normal webpack config below here
   target: 'electron-renderer',
+  devtool: 'source-map', // Cambia 'eval' por 'source-map' para evitar CSP issues
   module: {
-    rules,
+    rules: require('./webpack.rules'),
   },
 };
+

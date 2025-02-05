@@ -1,10 +1,12 @@
 // backend/db.js
 const { Sequelize } = require('sequelize');
+const sqlite3 = require('sqlite3');
 const path = require('path');
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: path.join(__dirname, 'database.sqlite'), // Se crea el archivo en la carpeta backend
+  dialectModule: sqlite3,
+  storage: "C:\\Users\\Sebas\\OneDrive\\Desktop\\database.sqlite", // Ruta absoluta para pruebas
   logging: false,
 });
 

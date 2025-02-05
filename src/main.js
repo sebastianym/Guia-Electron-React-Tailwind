@@ -1,11 +1,11 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+const { app, BrowserWindow, session } = require("electron");
+const path = require("path");
 
 // Importa la función startServer del backend
-const { startServer } = require('../backend/server'); // Ajusta la ruta si es necesario
+const { startServer } = require("../backend/server"); // Ajusta la ruta si es necesario
 
 // Manejo de creación/eliminación de accesos directos en Windows al instalar/desinstalar.
-if (require('electron-squirrel-startup')) {
+if (require("electron-squirrel-startup")) {
   app.quit();
 }
 
@@ -29,14 +29,25 @@ const createWindow = () => {
 
 // Cuando Electron esté listo...
 app.whenReady().then(() => {
-  // Inicia el servidor backend
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        "Content-Security-Policy": [
+          "default-src 'self' 'unsafe-inline' data:; " +
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:3000; " +
+            "connect-src * ws://localhost:3000 http://localhost:3000 http://localhost:3002; " +
+            "img-src 'self' data: blob:; " +
+            "font-src 'self' data:;",
+        ],
+      },
+    });
+  });
+
   startServer();
-  
-  // Crea la ventana principal
   createWindow();
 
-  // En macOS es común volver a crear una ventana cuando se hace clic en el dock y no hay ventanas abiertas.
-  app.on('activate', () => {
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
@@ -44,8 +55,8 @@ app.whenReady().then(() => {
 });
 
 // Finaliza la aplicación cuando se cierran todas las ventanas (excepto en macOS)
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });
