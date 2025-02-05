@@ -28,10 +28,74 @@ exports.login = async (req, res) => {
     }
     const token = jwt.sign(
       { id: user.id, role: user.role },
-      "d1748063fb4032af92d1e3637a858fc79a44e7db7c9171defc4b61e853601ca18e276601671369d13998d05900f2ca4e4628cd6f621cf0d7f073f2d7fe43ae060f9157989fae80311ce86f6ebfc63776464bfc9bf08739beefc9ac16b0e779e1775a5ce0ab906ebea4babf0fce023ab01ef406d27461a1de4876bd81ac2f303c486fd7819ca71d9978ad5a3ec71cd091fa9fa6c7a4f2f9ab439612cfe08f5825ead5e49de88b40d4c945bbf489517eaaca92d9a606758fe052e67ce03cefdd71eca9e2b077cdf77162f5ccce2ff04c7967baa9e79f7855e6a2e0bce0649b83c8d8f580da0cb09a552b8d004d220f8e60796c5c253f51c538a849df9455c45697",
+      "clave_secreta_super_segura",
       { expiresIn: "1h" }
     );
     res.json({ token });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Obtener todos los usuarios
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({ attributes: { exclude: ["password"] } });
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Crear usuario (similar a register pero sin autenticación)
+exports.createUser = async (req, res) => {
+  try {
+    const { firstName, lastName, identifier, password, role } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      firstName,
+      lastName,
+      identifier,
+      password: hashedPassword,
+      role,
+    });
+    res.status(201).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Actualizar usuario
+exports.updateUser = async (req, res) => {
+  try {
+    const { id, password, ...updateData } = req.body;
+    if (!id) return res.status(400).json({ error: "El ID es requerido" });
+
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    await user.update(updateData);
+    res.json({ message: "Usuario actualizado correctamente", user });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Eliminar usuario
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ error: "El ID es requerido" });
+
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+
+    await user.destroy();
+    res.json({ message: "Usuario eliminado correctamente" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

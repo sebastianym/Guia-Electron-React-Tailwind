@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import Layout from "../components/layout.jsx";
-import PurchaseForm from "../components/purchase-form.jsx";
+import ScaleForm from "../components/scale-form.jsx";
 
-export default function PurchasePage() {
+export default function ScalePage() {
   return (
     <Layout>
-      <PurchaseForm />
+      <ScaleForm />
     </Layout>
   );
 }

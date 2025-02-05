@@ -5,6 +5,8 @@ const authRoutes = require("./routes/authRoutes");
 const supplierRoutes = require("./routes/supplierRoutes");
 const clientRoutes = require("./routes/clientRoutes");
 const materialRoutes = require("./routes/materialRoutes");
+const purchaseRoutes = require("./routes/purchaseRoutes");
+const saleRoutes = require("./routes/saleRoutes");
 const cors = require("cors");
 const syncDb = require("./sync");
 
@@ -15,6 +17,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/suppliers", supplierRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/materials", materialRoutes);
+app.use("/api/purchase", purchaseRoutes);
+app.use("/api/sale", saleRoutes);
 
 // Configuración de variables de entorno
 const PORT = 3002;
